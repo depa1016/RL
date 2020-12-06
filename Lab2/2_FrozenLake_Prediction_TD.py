@@ -4,14 +4,10 @@ import numpy as np
 
 total_actions = 0
 total_exploration = 0
-total_random_action = 0
+total_policy_action = 0
 
 env = gym.make("FrozenLake-v0")
 random.seed(0)
-
-print("## Frozen Lake ##")
-print("Start state:")
-env.render()
 
 action2string = {0: "Left", 1: "Down", 2: "Right", 3: "Up"}
 
@@ -29,7 +25,7 @@ def init_q():
 def play_episode(q_values=None):
     global total_actions
     global total_exploration
-    global total_random_action
+    global total_policy_action
     alpha = 0.3
     discount = 1.0
     epsilon = 0.15
@@ -45,10 +41,17 @@ def play_episode(q_values=None):
                 total_actions += 1
             # Greedy Policy
             else:
-                total_random_action += 1
                 relevant_qs = [q_values[(state, action)] for action in range(0, env.action_space.n)]
-                action = np.argmax(relevant_qs)
-                total_actions += 1
+                # Wenn alle Values 0 -> random action statt argmax -> erster wert
+                if q_values[(state,np.argmax(relevant_qs))] == 0:
+                    total_actions += 1
+                    total_policy_action += 1
+                    action = random.randint(0, env.action_space.n - 1)
+                # Greedy Policy
+                else:
+                    total_policy_action += 1
+                    total_actions += 1
+                    action = np.argmax(relevant_qs)
             oldstate = state
             state, reward, done, _ = env.step(action)
             q_values[(oldstate, action)] += alpha * (
@@ -64,14 +67,15 @@ def print_q_values(q_values):
 
 def main():
     q_values, q_counters = init_q()
-    successful_episodes = 100
+    successful_episodes = 1000
     while successful_episodes > 0:
         play_episode(q_values)
         successful_episodes -= 1
     print_q_values(q_values)
     print("percentage of exploration: ", total_exploration / total_actions)
-    print("percentage of random actions: ", total_random_action / total_actions)
+    print("percentage of random actions: ", total_policy_action / total_actions)
 
 
 main()
+
 env.render()

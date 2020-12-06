@@ -41,7 +41,7 @@ def play_episode(q_values=None):
                 total_actions += 1
             # Greedy Policy
             else:
-                relevant_qs = [q_values[(state, action)] for action in range(0, env.action_space.n)]
+                #Find best possible action in a state -> save every action that fits argmax criteria -> choose random action (no randomness if there's only one best action)
                 max_q = np.argmax(q_values[(state, action)] for action in range(0, env.action_space.n))
                 action_list = []
                 for z in range(0, env.action_space.n):

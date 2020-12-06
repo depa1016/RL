@@ -36,7 +36,7 @@ def play_episode(q_values=None):
         while not done:
             # Exploration Policy
             if random.random() < epsilon:
-                action = random.randint(0, env.action_space.n - 1)
+                action = random.randint(0, 3)
                 total_exploration += 1
                 total_actions += 1
             # Greedy Policy
@@ -46,7 +46,7 @@ def play_episode(q_values=None):
                 if q_values[(state,np.argmax(relevant_qs))] == 0:
                     total_actions += 1
                     total_policy_action += 1
-                    action = random.randint(0, env.action_space.n - 1)
+                    action = random.randint(0, 3)
                 # Greedy Policy
                 else:
                     total_policy_action += 1
@@ -71,11 +71,11 @@ def main():
     while successful_episodes > 0:
         play_episode(q_values)
         successful_episodes -= 1
+        print("Episode succesfully finished, ",successful_episodes," Episodes remaining.")
     print_q_values(q_values)
     print("percentage of exploration: ", total_exploration / total_actions)
     print("percentage of random actions: ", total_policy_action / total_actions)
 
 
 main()
-
 env.render()

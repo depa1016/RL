@@ -42,16 +42,14 @@ def play_episode(q_values=None):
             # Greedy Policy
             else:
                 relevant_qs = [q_values[(state, action)] for action in range(0, env.action_space.n)]
-                # Wenn alle Values 0 -> random action statt argmax -> erster wert
-                if q_values[(state,np.argmax(relevant_qs))] == 0:
-                    total_actions += 1
-                    total_policy_action += 1
-                    action = random.randint(0, env.action_space.n - 1)
-                # Greedy Policy
-                else:
-                    total_policy_action += 1
-                    total_actions += 1
-                    action = np.argmax(relevant_qs)
+                max_q = np.argmax(q_values[(state, action)] for action in range(0, env.action_space.n))
+                action_list = []
+                for z in range(0, env.action_space.n):
+                    if q_values[(state,z)] == max_q:
+                        action_list.append(z)
+                action = action_list[random.randint(0,len(action_list)-1)]
+                total_actions += 1
+                total_policy_action += 1
             oldstate = state
             state, reward, done, _ = env.step(action)
             q_values[(oldstate, action)] += alpha * (
@@ -71,6 +69,7 @@ def main():
     while successful_episodes > 0:
         play_episode(q_values)
         successful_episodes -= 1
+        print("Episode erfolgreich beendet, noch ",successful_episodes," verbleibend.")
     print_q_values(q_values)
     print("percentage of exploration: ", total_exploration / total_actions)
     print("percentage of random actions: ", total_policy_action / total_actions)

@@ -28,12 +28,15 @@ def play_episode(q_values=None):
     global total_policy_action
     alpha = 0.3
     discount = 1.0
-    epsilon = 0.15
+    epsilon = 0.1
     reward_in_episode = 0
     while reward_in_episode <= 0:
         state = env.reset()
         done = False
+        action = None
         while not done:
+            oldstate = state
+            oldaction = action
             # Exploration Policy
             if random.random() < epsilon:
                 action = random.randint(0, 3)
@@ -52,10 +55,11 @@ def play_episode(q_values=None):
                     total_policy_action += 1
                     total_actions += 1
                     action = np.argmax(relevant_qs)
-            oldstate = state
+
+
             state, reward, done, _ = env.step(action)
-            q_values[(oldstate, action)] += alpha * (
-                        reward + discount * q_values[(state, action)] - q_values[(oldstate, action)])
+            if oldaction is not None: q_values[(oldstate, oldaction)] += alpha * (
+                        reward + discount * q_values[(state, action)] - q_values[(oldstate, oldaction)])
             reward_in_episode += reward
 
 

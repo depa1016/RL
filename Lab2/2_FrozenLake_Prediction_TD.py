@@ -55,8 +55,6 @@ def play_episode(q_values=None):
                     total_policy_action += 1
                     total_actions += 1
                     action = np.argmax(relevant_qs)
-
-
             state, reward, done, _ = env.step(action)
             if oldaction is not None: q_values[(oldstate, oldaction)] += alpha * (
                         reward + discount * q_values[(state, action)] - q_values[(oldstate, oldaction)])

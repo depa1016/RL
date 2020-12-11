@@ -69,7 +69,7 @@ def print_q_values(q_values):
 
 def main():
     q_values, q_counters = init_q()
-    successful_episodes = 1000
+    successful_episodes = 10000
     while successful_episodes > 0:
         play_episode(q_values)
         successful_episodes -= 1
